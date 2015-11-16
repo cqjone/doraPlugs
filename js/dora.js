@@ -6,6 +6,25 @@ function stopScroll(event){
     event.preventDefault();
 }
 
+//初始化alert,dialog等容器位置
+function setContainerPosition(obj){
+
+    var uitype = $(obj).attr('ui-type');
+    if(uitype == 'alert' || uitype == 'tips' || uitype == 'block'){
+        var $clone = $(obj).clone().css('display', 'block').appendTo('body');
+        var top = Math.round((document.documentElement.clientHeight - $clone.height()) / 2);
+        var left = Math.round((document.documentElement.clientWidth - $clone.width()) / 2);
+        top = top > 0 ? top : 0;
+        left = left > 0 ? left : 0;
+        $clone.remove();
+        $(obj).css({
+            "top" : top,
+            "left" : left
+        });
+    }
+
+}
+
 /*
  * block控件
  * 指定block对象的属性message
@@ -83,5 +102,78 @@ blockObj.prototype = {
 function blockHtml(objId, jsonData) {
     var html = "";
     html += "<div class='block " + jsonData.overClass + "' ui-type='block' id='" + objId + "'></div>";
+    return html;
+}
+
+
+/*
+ * tips 操作提示控件
+ * 指定tips对象的属性message
+ * type : 信息提示类型 success 操作成功 warning 警告 danger 危险 info 提示
+ * message : 信息提示内容(string/obj)
+ * */
+
+$.tipsShow = function (jsonData) {
+    var currentObj = new tipsObj(jsonData);
+};
+
+$.tipsHide = function (obj) {
+    $(obj).remove();
+    document.body.removeEventListener('touchmove', stopScroll , false);
+};
+
+var tipsObj = function (jsonData) {
+    var objId = "tips_" + Math.round(Math.random() * 100);
+    jsonData = jsonData || {};
+    jsonData.type = jsonData.type || 'success';
+    jsonData.message = jsonData.message || '操作成功！';
+    jsonData.overClass = jsonData.overClass || 'tips-a';
+    jsonData.callBack = jsonData.callBack || '';
+    this.html = tipsHtml(objId, jsonData);
+    this.init(objId,jsonData.callBack);
+};
+
+tipsObj.prototype = {
+//    tips初始化
+    init: function (objId,callBack) {
+        var _this = this;
+
+        $('body').prepend(this.html);
+        _this.obj = $('#' + objId);
+        var closeBtn = $(_this.obj).find('.close');
+        var confirmBtn = $(_this.obj).find('.confirm');
+//        设置容器的居中显示
+        setContainerPosition(_this.obj);
+        $(_this.obj).css('z-index', 11);
+        document.body.addEventListener('touchmove', stopScroll , false);
+        setTimeout(function () {
+            $(_this.obj).animate({
+                'opacity': 0
+            }, 1000, function () {
+                $(_this.obj).remove();
+                document.body.removeEventListener('touchmove', stopScroll , false);
+                if(callBack){
+                    callBack();
+                }
+            });
+        }, 3000);
+    }
+};
+
+function tipsHtml(objId, jsonData) {
+    var html = "";
+    var typeStr = 'check-right';
+    if (jsonData.type == "info") {
+        typeStr = 'notice-up';
+    }else if(jsonData.type == "warning"){
+        typeStr = 'notice-down'
+    }else if(jsonData.type == "danger"){
+        typeStr = 'notice-triangle'
+    }
+    html += "<div class='tips " + jsonData.overClass + "' ui-type='tips' id='" + objId + "'>";
+    html += "<div class='tips-content'>";
+    html += "<i class='icon-"+ typeStr +"'></i>";
+    html += "&nbsp;<span class='tips-info'>" + jsonData.message + "</span></div>";
+    html += "</div>";
     return html;
 }
