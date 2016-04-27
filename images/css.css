@@ -1,0 +1,53 @@
+body {
+    margin: 0;
+    padding: 0;
+}
+
+.slider {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+}
+
+.slider ul {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+}
+
+.slider ul li {
+    list-style-type: none;
+    float: left;
+    font-size: 0;
+}
+
+.slider ul li img {
+    width: 100%;
+}
+
+.slider .focus {
+    margin-bottom: 0.3em;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    text-align: center;
+}
+
+.slider .focus > div {
+}
+
+.slider .focus > div span {
+    border-radius: 50%;
+    background-color: #aaaaaa;
+    width: 0.5em;
+    height: 0.5em;
+    margin-right: 0.2em;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.slider .focus > div span.current {
+    background-color: #ffffff
+}

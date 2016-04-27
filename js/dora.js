@@ -177,3 +177,219 @@ function tipsHtml(objId, jsonData) {
     html += "</div>";
     return html;
 }
+
+/**
+ * doraSlider
+ * @charset utf-8
+ * @extends jquery.1.10.1
+ * @fileOverview 焦点轮播图
+ * @author 肖燊
+ * @version 1.0
+ * @date 2016-04-27
+ * @example
+ * new slider('#demo1',{});
+ */
+
+function doraSlider(id,settings){
+
+    var defaultSettings = {
+        width: '100%', //容器宽度
+        height: '4em', //容器高度
+        showFocus : true, // 轮播点是否显示
+        during: 5000, //间隔时间
+        speed:300 //滑动速度
+    };
+    settings = $.extend(true, {}, defaultSettings, settings);
+
+    this.obj = $(id) || {};
+    this.width = settings.width ;
+    this.height = settings.height;
+    this.showFocus = settings.showFocus; // 轮播点是否显示
+    this.during = settings.during;
+    this.speed = settings.speed;
+    this.init();
+
+}
+
+
+doraSlider.prototype = {
+
+    init : function(){
+
+        var _this = this.obj;
+        var _showFocus = this.showFocus;
+        var _during = this.during;
+        var _speed = this.speed;
+        var _slideIndex = 1; // 轮播索引值
+        var _imgWidth = $(_this).width();
+        var _ulContainer = $(_this).find('ul');
+        var _liContainer = $(_this).find('ul li');
+        var _imgNum = $(_liContainer).length; // 图片个数
+        var _totalImgNum = _imgNum + 2;
+        var _imgBoxWidth = _imgWidth * _totalImgNum;
+        var _oPosition = {}; //触点位置
+        var _startX = 0, _startY = 0; //触摸开始时手势横纵坐标
+        var _temPos = - _imgWidth ;
+        var _slideTask;
+
+        //容器样式
+        $(_this).css({height : this.height});
+        //图片容器
+        $(_ulContainer).css({
+            width : _imgBoxWidth,
+            left : -_imgWidth
+        });
+        //图片展示列表
+        $(_liContainer).css({
+            width : $(_this).width()
+        });
+
+        var _firstObj = $(_this).find('ul li').eq(0);
+        var _lastObj = $(_this).find('ul li').eq(_imgNum-1);
+        //构造循环对象
+        $(_ulContainer).append(_firstObj.clone());
+        $(_ulContainer).prepend(_lastObj.clone());
+
+        //添加轮播事件
+        if(_imgNum > 1){
+            autoMove();
+            //添加轮播小点
+            addFocus();
+        }
+
+        if (isMobile()) {
+            if(_imgNum > 1){
+                //绑定触摸事件
+                _ulContainer.get(0).addEventListener('touchstart', touchStartFunc, false);
+                _ulContainer.get(0).addEventListener('touchmove', touchMoveFunc, false);
+                _ulContainer.get(0).addEventListener('touchend', touchEndFunc, false);
+            }
+        }
+
+
+        function autoMove(){
+            clearInterval(_slideTask);
+            _slideTask = setInterval(function(){
+                _slideIndex = _slideIndex + 1;
+                $(_ulContainer).animate({
+                    left : - _slideIndex * _imgWidth
+                },_speed,function(){
+                    setCurrentPos();
+                })
+            },_during)
+        }
+
+        //重置图片集合的位置
+        function setCurrentPos(){
+            if(_slideIndex == _totalImgNum - 1){
+                $(_ulContainer).css({left : -_imgWidth + 'px'});
+                _slideIndex = 1;
+            }else if(_slideIndex == 0){
+                $(_ulContainer).css({left : -(_totalImgNum - 2) * _imgWidth + 'px'});
+                _slideIndex = _totalImgNum - 2;
+            }
+            //切换轮播小点
+            $(_this).find('.focus span').eq(_slideIndex-1).addClass('current').siblings().removeClass('current');
+        }
+
+        function addFocus(){
+            _this.append('<div class="focus"><div></div></div>');
+            var oFocusContainer = $(".focus",_this);
+            for (var i = 0; i < _imgNum; i++) {
+                $("div", oFocusContainer).append("<span></span>");
+            }
+            var oFocus = $("span", oFocusContainer);
+            oFocus.first().addClass("current");
+            oFocusContainer.css({
+                display : _showFocus
+            })
+        }
+
+        //判断是否是移动设备
+        function isMobile(){
+            if(navigator.userAgent.match(/Android/i) || navigator.userAgent.indexOf('iPhone') != -1 || navigator.userAgent.indexOf('iPod') != -1 || navigator.userAgent.indexOf('iPad') != -1) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        }
+
+        //获取触点位置
+        function touchPos(e){
+            var touches = e.changedTouches, l = touches.length, touch, tagX, tagY;
+            for (var i = 0; i < l; i++) {
+                touch = touches[i];
+                tagX = touch.clientX;
+                tagY = touch.clientY;
+            }
+            _oPosition.x = tagX;
+            _oPosition.y = tagY;
+            return _oPosition;
+        }
+
+        //触摸开始
+        function touchStartFunc(e){
+            touchPos(e);
+            _startX = _oPosition.x;
+            _startY = _oPosition.y;
+            _temPos = _ulContainer.position().left;
+        }
+
+        //触摸移动
+        function touchMoveFunc(e){
+            clearInterval(_slideTask);
+            touchPos(e);
+            var moveX = _oPosition.x - _startX;
+            var moveY = _oPosition.y - _startY;
+            if (Math.abs(moveY) < Math.abs(moveX)) {
+                e.preventDefault();
+                _ulContainer.css({
+                    left: _temPos + moveX
+                });
+            }
+        }
+
+        //触摸结束
+        function touchEndFunc(e){
+            touchPos(e);
+            var moveX = _oPosition.x - _startX;
+            var moveY = _oPosition.y - _startY;
+            if (Math.abs(moveY) < Math.abs(moveX)) {
+                if (moveX > 0) {
+                    _slideIndex--;
+                    if(_slideIndex >= 0){
+                        doAnimate(- _slideIndex * _imgWidth, autoMove);
+                    }else{
+                        doAnimate(0, autoMove);
+                    }
+                }
+                else {
+                    _slideIndex++;
+                    if (_slideIndex < _totalImgNum && _slideIndex >= 0) {
+                        doAnimate( - _slideIndex * _imgWidth, autoMove);
+                    }
+                    else {
+                        _slideIndex = _totalImgNum - 1;
+                        doAnimate(-_slideIndex * _imgWidth, autoMove);
+                    }
+                }
+            }
+        }
+
+
+        //动画效果
+        function doAnimate(iTarget, fn){
+            _ulContainer.stop().animate({
+                left: iTarget
+            }, 300 , function(){
+                setCurrentPos();
+                if (fn){
+                    fn();
+                }
+            });
+        }
+
+    }
+
+};
