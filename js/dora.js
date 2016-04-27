@@ -260,10 +260,20 @@ doraSlider.prototype = {
         if (isMobile()) {
             if(_imgNum > 1){
                 //绑定触摸事件
-                _ulContainer.get(0).addEventListener('touchstart', touchStartFunc, false);
-                _ulContainer.get(0).addEventListener('touchmove', touchMoveFunc, false);
-                _ulContainer.get(0).addEventListener('touchend', touchEndFunc, false);
+                bindEvent();
             }
+        }
+
+        function bindEvent(){
+            _ulContainer.get(0).addEventListener('touchstart', touchStartFunc, false);
+            _ulContainer.get(0).addEventListener('touchmove', touchMoveFunc, false);
+            _ulContainer.get(0).addEventListener('touchend', touchEndFunc, false);
+        }
+
+        function removeBindEvent(){
+            _ulContainer.get(0).removeEventListener('touchstart',touchStartFunc, false);
+            _ulContainer.get(0).removeEventListener('touchmove',touchMoveFunc, false);
+            _ulContainer.get(0).removeEventListener('touchend',touchEndFunc, false);
         }
 
 
@@ -271,10 +281,12 @@ doraSlider.prototype = {
             clearInterval(_slideTask);
             _slideTask = setInterval(function(){
                 _slideIndex = _slideIndex + 1;
+                removeBindEvent();
                 $(_ulContainer).animate({
                     left : - _slideIndex * _imgWidth
                 },_speed,function(){
                     setCurrentPos();
+                    bindEvent();
                 })
             },_during)
         }
@@ -380,10 +392,12 @@ doraSlider.prototype = {
 
         //动画效果
         function doAnimate(iTarget, fn){
+            removeBindEvent();
             _ulContainer.stop().animate({
                 left: iTarget
             }, 300 , function(){
                 setCurrentPos();
+                bindEvent();
                 if (fn){
                     fn();
                 }
