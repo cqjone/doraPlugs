@@ -197,7 +197,7 @@ function doraSlider(id,settings){
         height: '4em', //容器高度
         showFocus : true, // 轮播点是否显示
         during: 5000, //间隔时间
-        speed:300 //滑动速度
+        speed: 200 //滑动速度
     };
     settings = $.extend(true, {}, defaultSettings, settings);
 
@@ -395,7 +395,7 @@ doraSlider.prototype = {
             removeBindEvent();
             _ulContainer.stop().animate({
                 left: iTarget
-            }, 300 , function(){
+            }, _speed , function(){
                 setCurrentPos();
                 bindEvent();
                 if (fn){
