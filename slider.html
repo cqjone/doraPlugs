@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+    <title>doraSlider</title>
+    <script src="js/jquery-1.10.2.min.js"></script>
+    <script src="js/dora.js"></script>
+    <link rel="stylesheet" href="css/dora.css">
+</head>
+<body>
+
+<div class="slider" id="demo">
+    <ul>
+        <li><img src="images/1.jpg"></li>
+        <li><img src="images/2.jpg"></li>
+        <li><img src="images/3.jpg"></li>
+    </ul>
+</div>
+<br>
+<br>
+<div class="slider" id="demo1">
+    <ul>
+        <li><img src="images/4.jpg"></li>
+        <li><img src="images/5.jpg"></li>
+        <li><img src="images/6.jpg"></li>
+        <li><img src="images/7.jpg"></li>
+    </ul>
+</div>
+<script>
+    $(function(){
+
+        new doraSlider('#demo',{
+            showFocus : true
+        });
+
+        new doraSlider('#demo1',{
+            showFocus : true,
+            height : '10em'
+        });
+
+    })
+</script>
+</body>
+</html>
