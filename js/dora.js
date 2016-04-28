@@ -148,9 +148,9 @@ tipsObj.prototype = {
         document.body.addEventListener('touchmove', stopScroll , false);
         setTimeout(function () {
             $(_this.obj).animate({
-                'opacity': 0
+                //'opacity': 0
             }, 1000, function () {
-                $(_this.obj).remove();
+                //$(_this.obj).remove();
                 document.body.removeEventListener('touchmove', stopScroll , false);
                 if(callBack){
                     callBack();

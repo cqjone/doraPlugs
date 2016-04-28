@@ -129,9 +129,9 @@ body {
 /*tips操作提示*/
 .tips {
     background: #4c4c4c;
-    opacity: 0.7;
+    opacity: 0.5;
     color: #FFFFFF;
-    width: 23%;
+    width: 15em;
     margin: 0 auto;
     position: fixed;
 }
