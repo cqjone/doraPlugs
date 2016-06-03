@@ -1,6 +1,8 @@
 /**
  * Created by Administrator on 2015/10/20.
  */
+!(function(){
+'use strict';
 //禁止滚动事件
 function stopScroll(event){
     event.preventDefault();
@@ -10,7 +12,7 @@ function stopScroll(event){
 function setContainerPosition(obj){
 
     var uitype = $(obj).attr('ui-type');
-    if(uitype == 'alert' || uitype == 'tips' || uitype == 'block'){
+    if(uitype == 'alert' || uitype == 'tips' || uitype == 'block' || uitype == 'layer'){
         var $clone = $(obj).clone().css('display', 'block').appendTo('body');
         var top = Math.round((document.documentElement.clientHeight - $clone.height()) / 2);
         var left = Math.round((document.documentElement.clientWidth - $clone.width()) / 2);
@@ -407,3 +409,134 @@ doraSlider.prototype = {
     }
 
 };
+
+
+/*
+ * layer控件
+ *
+ *
+ * */
+
+//创建弹窗
+
+    $.doraLayer = {
+
+        alert(msg,callback){
+            //var newMsg = msg || '默认弹窗文本';
+            var alertHtml = `
+            <div class="alert-block" ui-type="layer" style="z-index: 11">
+                <div class="icon-close"></div>
+                <p class="alert-body">${msg == undefined ? '默认弹窗文本' : msg}</p>
+                <div class="alert-footer">
+                    <button class="confirm-btn dora-btn btn-default">确认</button>
+                </div>
+            </div>
+            `;
+
+            addMaster('alert',alertHtml,callback);
+        },
+
+        confirm(msg,confirm,cancel){
+            var confirmHtml = `
+                <div class="alert-block" ui-type="layer" style="z-index: 11">
+                <div class="icon-close"></div>
+                <p class="alert-body">${msg == undefined ? '默认弹窗文本' : msg}</p>
+                <div class="alert-footer">
+                    <button class="confirm-btn dora-btn btn-default">确认</button>&nbsp;
+                    <button class="cancel-btn dora-btn btn-primary">取消</button>
+                </div>
+            </div>
+            `;
+
+            addMaster('confirm',confirmHtml,confirm,cancel);
+        },
+
+        tips(msg,callback){
+            var tipsHtml = `
+                <div class="alert-tip" ui-type="layer" style="z-index: 11">
+                    <p>${msg}</p>
+                </div>
+            `;
+
+            addMaster('tips',tipsHtml,callback);
+        }
+
+
+    };
+
+
+    function addMaster(type,layerHtml,confirm,cancel){
+
+        var _body = $('body');
+        var _targetObj = $(layerHtml);
+        var _objId = "layer_" + Math.round(Math.random() * 10000);
+        var _masterObj =  $("<div class='doraui_mask' style='z-index: 10'></div>");
+        if(type == 'alert' || type == 'confirm'){
+            $(_masterObj).appendTo(_body);
+        }
+
+        $(_targetObj).appendTo(_body);
+        $(_targetObj).attr('id',_objId);
+
+        //绑定按钮事件
+        bindButtonEvent(type,_targetObj,_masterObj,confirm,cancel);
+        //容器居中显示
+        setContainerPosition(_targetObj);
+        _targetObj.addClass('show-layer');
+
+        if(type == 'tips'){
+
+            setTimeout(function () {
+                $(_targetObj).animate({
+                    'opacity': 0
+                }, 1000, function () {
+                    $(_targetObj).remove();
+                    //document.body.removeEventListener('touchmove', stopScroll , false);
+                    if(confirm){
+                        confirm();
+                    }
+                });
+            }, 3000);
+
+        }
+
+    }
+
+    function bindButtonEvent(type,_targetObj,_masterObj,confirm,cancel){
+
+        if(type == 'alert'){
+            $(_targetObj).find('.confirm-btn').click(function(){
+                hideLayer(_targetObj,_masterObj);
+                confirm();
+            });
+            $(_targetObj).find('.icon-close').click(function(){
+                hideLayer(_targetObj,_masterObj);
+            });
+        }else if(type == 'confirm'){
+            $(_targetObj).find('.confirm-btn').click(function(){
+                hideLayer(_targetObj,_masterObj);
+                confirm();
+            });
+
+            $(_targetObj).find('.cancel-btn').click(function(){
+                hideLayer(_targetObj,_masterObj);
+                cancel();
+            });
+
+            $(_targetObj).find('.icon-close').click(function(){
+                hideLayer(_targetObj,_masterObj);
+            });
+        }
+
+    }
+
+    function hideLayer(_targetObj,_masterObj){
+        _targetObj.removeClass('show-layer');
+        _masterObj.remove();
+        setTimeout(function(){
+            _targetObj.remove();
+        },400)
+    }
+
+})(jQuery);
+

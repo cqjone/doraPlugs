@@ -35,6 +35,10 @@ body {
     content: "\e603";
 }
 
+.icon-close:before {
+    content: "\e602";
+}
+
 /*按钮*/
 .dora-btn {
     -moz-user-select: none;
@@ -85,7 +89,7 @@ body {
     height: 100%;
     top: 0;
     left: 0;
-    background: rgba(0, 0, 0, 0.6);
+    background: rgba(0, 0, 0, 0.5);
 }
 
 /*弹窗容器*/
@@ -214,4 +218,55 @@ body {
 
 .slider .focus > div span.current {
     background-color: #ffffff
+}
+
+.alert-block {
+    width: 75%;
+    height: 10em;
+    position: absolute;
+    border-radius: 6px;
+    background: #ffffff;
+    transform: scale(0);
+    /*transform-origin: 100% 70% 0;*/
+    transition: transform 0.3s ease 0s, opacity 0.3s ease 0s;
+    opacity: 0;
+}
+
+.alert-block.show-layer {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.alert-block .alert-body {
+    padding: 1.5em 1em;
+}
+
+.alert-block .alert-footer {
+    padding: 0.6em 1em;
+    text-align: center;
+}
+
+.alert-block .icon-close {
+    font-size: 1.2em;
+    color: #000000;
+    position: absolute;
+    right: 0.4em;
+    top: 0.4em;
+}
+
+.alert-tip {
+    position: absolute;
+    background: #aaaaaa;
+    opacity: 0.3;
+    width: 65%;
+    transform: scale(0);
+    transition: transform 0.3s ease 0s, opacity 0.3s ease 0s;
+    opacity: 0;
+}
+.alert-tip p{
+    padding: 0.2em 1em;
+}
+.alert-tip.show-layer {
+    opacity: 1;
+    transform: scale(1);
 }
