@@ -92,8 +92,8 @@ blockObj.prototype = {
             'margin-top' : - $(_this.obj).height()/2 + 'px'
         });
 
-        $("<div class='doraui_mask' style='z-index: 10'></div>").insertBefore(_this.obj);
-        $(_this.obj).css('z-index', 11);
+        $("<div class='doraui_mask' style='z-index: 19870426'></div>").insertBefore(_this.obj);
+        $(_this.obj).css('z-index', 19870427);
 //        禁止背景拖动
         document.body.addEventListener('touchmove', stopScroll , false);
 
@@ -421,57 +421,72 @@ doraSlider.prototype = {
 
     $.doraLayer = {
 
-        alert(msg,callback){
-            //var newMsg = msg || '默认弹窗文本';
+        open({style = '',type = 'alert',title = '',msg = '默认内容',yes = ()=>{},no = ()=>{} ,btn = ['确认','取消'],time = 2000
+            ,shadeClose = true}){
+            var targetHtml;
+            if(type == 'alert'){
+                targetHtml = this.getAlertHtml(title,msg,style,btn);
+                addMaster({type,targetHtml,yes,shadeClose});
+            }else if(type == 'confirm'){
+                targetHtml = this.getConfirmHtml(title,msg,style,btn);
+                addMaster({type,targetHtml,yes,no,shadeClose});
+            }else if(type == 'tips'){
+                targetHtml = this.getTipsHtml(msg,style);
+                addMaster({type,targetHtml,yes,time,shadeClose});
+            }
+        },
+
+        getAlertHtml(title,msg,style,btn){
             var alertHtml = `
-            <div class="alert-block" ui-type="layer" style="z-index: 11">
+            <div class="alert-block ${style}" ui-type="layer" style="z-index: 19870427">
                 <div class="icon-close"></div>
-                <p class="alert-body">${msg == undefined ? '默认弹窗文本' : msg}</p>
+                ${title == "" ? '' : '<h3 class="alert-title">'+title+'</h3>'}
+                <p class="alert-body">${msg}</p>
                 <div class="alert-footer">
-                    <button class="confirm-btn dora-btn btn-default">确认</button>
+                    <ul class="averagebox">
+                         <li class='confirm-btn'>${btn[0]}</li>
+                    </ul>
                 </div>
             </div>
             `;
-
-            addMaster('alert',alertHtml,callback);
+            return alertHtml;
         },
 
-        confirm(msg,confirm,cancel){
+        getConfirmHtml(title,msg,style,btn){
             var confirmHtml = `
-                <div class="alert-block" ui-type="layer" style="z-index: 11">
+                <div class="alert-block" ui-type="layer" style="z-index: 19870427">
                 <div class="icon-close"></div>
-                <p class="alert-body">${msg == undefined ? '默认弹窗文本' : msg}</p>
+                ${title == "" ? '' : '<h3 class="alert-title">'+title+'</h3>'}
+                <p class="alert-body">${msg}</p>
                 <div class="alert-footer">
-                    <button class="confirm-btn dora-btn btn-default">确认</button>&nbsp;
-                    <button class="cancel-btn dora-btn btn-primary">取消</button>
+                    <ul class="averagebox">
+                        ${btn.length > 1 ? "<li class='confirm-btn'>"+btn[0]+"</li><li class='cancel-btn'>"+btn[1]+"</li>" : "<li class='confirm-btn'>"+btn[0]+"</li>"}
+                    </ul>
                 </div>
             </div>
             `;
-
-            addMaster('confirm',confirmHtml,confirm,cancel);
+            return confirmHtml;
         },
 
-        tips(msg,callback){
+        getTipsHtml(msg,style){
             var tipsHtml = `
-                <div class="alert-tip" ui-type="layer" style="z-index: 11">
+                <div class="alert-tip" ui-type="layer" style="z-index: 19870427">
                     <p>${msg}</p>
                 </div>
             `;
-
-            addMaster('tips',tipsHtml,callback);
+            return tipsHtml;
         }
-
 
     };
 
 
-    function addMaster(type,layerHtml,confirm,cancel){
+    function addMaster(params){
 
         var _body = $('body');
-        var _targetObj = $(layerHtml);
+        var _targetObj = $(params.targetHtml);
         var _objId = "layer_" + Math.round(Math.random() * 10000);
-        var _masterObj =  $("<div class='doraui_mask' style='z-index: 10'></div>");
-        if(type == 'alert' || type == 'confirm'){
+        var _masterObj =  $("<div class='doraui_mask' style='z-index: 19870426'></div>");
+        if(params.type == 'alert' || params.type == 'confirm' || params.type == 'tips'){
             $(_masterObj).appendTo(_body);
         }
 
@@ -479,35 +494,33 @@ doraSlider.prototype = {
         $(_targetObj).attr('id',_objId);
 
         //绑定按钮事件
-        bindButtonEvent(type,_targetObj,_masterObj,confirm,cancel);
+        bindButtonEvent(params.type,_targetObj,_masterObj,params.yes,params.no,params.shadeClose);
         //容器居中显示
         setContainerPosition(_targetObj);
         _targetObj.addClass('show-layer');
 
-        if(type == 'tips'){
-
-            setTimeout(function () {
-                $(_targetObj).animate({
-                    'opacity': 0
-                }, 1000, function () {
-                    $(_targetObj).remove();
-                    //document.body.removeEventListener('touchmove', stopScroll , false);
-                    if(confirm){
-                        confirm();
-                    }
-                });
-            }, 3000);
-
+        if(params.type == 'tips'){
+            setTimeout(()=>{
+                hideLayer(_targetObj,_masterObj);
+                if(params.yes){
+                    params.yes();
+                }
+            }, params.time);
         }
 
     }
 
-    function bindButtonEvent(type,_targetObj,_masterObj,confirm,cancel){
-
+    function bindButtonEvent(type,_targetObj,_masterObj,confirm,cancel,shadeClose){
+        document.body.addEventListener('touchmove', stopScroll , false);
+        if(shadeClose){
+            $('body').find('.doraui_mask').click(function(){
+                hideLayer(_targetObj,_masterObj);
+            });
+        }
         if(type == 'alert'){
             $(_targetObj).find('.confirm-btn').click(function(){
                 hideLayer(_targetObj,_masterObj);
-                confirm();
+                if(confirm) confirm();
             });
             $(_targetObj).find('.icon-close').click(function(){
                 hideLayer(_targetObj,_masterObj);
@@ -515,17 +528,26 @@ doraSlider.prototype = {
         }else if(type == 'confirm'){
             $(_targetObj).find('.confirm-btn').click(function(){
                 hideLayer(_targetObj,_masterObj);
-                confirm();
+                if(confirm) confirm();
             });
 
             $(_targetObj).find('.cancel-btn').click(function(){
                 hideLayer(_targetObj,_masterObj);
-                cancel();
+                if(cancel) cancel();
             });
 
             $(_targetObj).find('.icon-close').click(function(){
                 hideLayer(_targetObj,_masterObj);
             });
+
+            $(_targetObj).find('.alert-body')[0].addEventListener('touchmove', function(e){
+
+                document.body.removeEventListener('touchmove', stopScroll , false);
+
+            } , false);
+            $(_targetObj).find('.alert-body')[0].addEventListener('touchend', function(){
+                document.body.addEventListener('touchmove', stopScroll , false);
+            } , false);
         }
 
     }
@@ -533,6 +555,7 @@ doraSlider.prototype = {
     function hideLayer(_targetObj,_masterObj){
         _targetObj.removeClass('show-layer');
         _masterObj.remove();
+        document.body.removeEventListener('touchmove', stopScroll , false);
         setTimeout(function(){
             _targetObj.remove();
         },400)

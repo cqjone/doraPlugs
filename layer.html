@@ -11,16 +11,36 @@
     <script>
         $(function(){
             $('#layerAlert').click(function(){
-                $.doraLayer.alert('操作成功',function(){console.log('回调成功！')});
+                $.doraLayer.open({
+                    type : 'alert',
+                    shadeClose :false,
+                    yes : function(){
+                        $.doraLayer.open({
+                            type : 'tips'
+                        })
+                    }
+                });
             });
 
             $('#layerConfirm').click(function(){
-                $.doraLayer.confirm('您确认要执行该操作吗？',function(){console.log('您执行了确认')},function(){console.log('您执行了取消')});
+
+                $.doraLayer.open({
+                    title : '这是标题',
+                    type : 'confirm',
+                    btn : ['是','否'],
+                    msg : 'layer是一枚可以让你想到即可做到的web弹窗/层js组件,它侧重于用户灵活的自定义,为不同人的使用习惯提供全方位设计,您的页面会因此拥有更丰富、友好的操作体验,为不同人的使用习惯提供全方位设计,您的页面会因此拥有更丰富、友好的操作体验'
+                });
+
             });
 
             $('#layerTips').click(function(){
-                $.doraLayer.tips('恭喜你，操作成功！',function(){console.log('提示消息啦！！！')});
+
+                $.doraLayer.open({
+                    type : 'tips'
+                });
+
             });
+
 
 
         })
@@ -35,5 +55,30 @@
 <br/>
 <br/>
 <button type="button" class="dora-btn btn-default" id="layerTips">打开Layer Tips 窗口</button>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
+<br/>
 </body>
 </html>

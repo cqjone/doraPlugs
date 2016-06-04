@@ -222,8 +222,7 @@ body {
 
 .alert-block {
     width: 75%;
-    height: 10em;
-    position: absolute;
+    position: fixed;
     border-radius: 6px;
     background: #ffffff;
     transform: scale(0);
@@ -238,17 +237,75 @@ body {
 }
 
 .alert-block .alert-body {
-    padding: 1.5em 1em;
+    padding: 0em 1em;
+    max-height: 8em;
+    background: #FFFFFF;
+    overflow-y: auto;
+}
+
+.alert-block .alert-title {
+    text-align: left;
+    padding: 0.6em 1em;
+    font-weight: normal;
+    border-bottom: 1px solid #EBEBEB;
+    margin: 0;
+    font-size: 1em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
 }
 
 .alert-block .alert-footer {
-    padding: 0.6em 1em;
+    position: relative;
+    padding: 0em 1em;
     text-align: center;
+    border-top: 1px solid #EBEBEB;
+    background: #FFFFFF;
+    -moz-border-radius-bottomleft: 6px;
+    -webkit-border-bottom-left-radius: 6px;
+    -moz-border-radius-bottomright: 6px;
+    -webkit-border-bottom-right-radius: 6px;
+}
+
+.alert-block .alert-footer li:nth-child(2):before {
+    content: '\20';
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: #EBEBEB;
+}
+
+.averagebox {
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    -webkit-flex-flow: wrap;
+    justify-content: space-around;
+}
+
+.alert-block .alert-footer ul {
+    margin: 0;
+    padding: 0
+}
+
+.alert-block .alert-footer ul li {
+    position: relative;
+    text-align: center;
+    font-size: 1em;
+    cursor: pointer;
+    padding: 0.6em 0;
+    -webkit-box-flex: 1;
+    -moz-box-flex: 1;
+    -ms-box-flex: 1;
+    text-align: center;
+    list-style-type: none;
 }
 
 .alert-block .icon-close {
     font-size: 1.2em;
-    color: #000000;
+    color: #999999;
     position: absolute;
     right: 0.4em;
     top: 0.4em;
@@ -256,16 +313,20 @@ body {
 
 .alert-tip {
     position: absolute;
-    background: #aaaaaa;
-    opacity: 0.3;
-    width: 65%;
+    background: #FFFFFF;
+    opacity: 1;
+    width: 70%;
     transform: scale(0);
     transition: transform 0.3s ease 0s, opacity 0.3s ease 0s;
-    opacity: 0;
+    border-radius: 6px;
 }
-.alert-tip p{
-    padding: 0.2em 1em;
+
+.alert-tip p {
+    padding: 0.1em 1em;
+    text-align: center;
+    font-size: 1em;
 }
+
 .alert-tip.show-layer {
     opacity: 1;
     transform: scale(1);
