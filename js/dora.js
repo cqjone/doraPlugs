@@ -511,6 +511,7 @@ doraSlider.prototype = {
     }
 
     function bindButtonEvent(type,_targetObj,_masterObj,confirm,cancel,shadeClose){
+
         document.body.addEventListener('touchmove', stopScroll , false);
         if(shadeClose){
             $('body').find('.doraui_mask').click(function(){
@@ -545,6 +546,7 @@ doraSlider.prototype = {
                 document.body.removeEventListener('touchmove', stopScroll , false);
 
             } , false);
+
             $(_targetObj).find('.alert-body')[0].addEventListener('touchend', function(){
                 document.body.addEventListener('touchmove', stopScroll , false);
             } , false);
