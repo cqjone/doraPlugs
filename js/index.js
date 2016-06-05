@@ -527,12 +527,13 @@
             });
 
             $(_targetObj).find('.alert-body')[0].addEventListener('touchmove', function (e) {
-
+                console.log('-----xxxx-----');
                 document.body.removeEventListener('touchmove', stopScroll, false);
             }, false);
 
             $(_targetObj).find('.alert-body')[0].addEventListener('touchend', function () {
-                document.body.addEventListener('touchmove', stopScroll, false);
+                console.log('----scroll---' + $(_targetObj).find('.alert-body').scrollTop());
+                //document.body.addEventListener('touchmove', stopScroll , false);
             }, false);
         }
     }

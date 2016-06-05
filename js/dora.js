@@ -4,8 +4,8 @@
 !(function(){
 'use strict';
 //禁止滚动事件
-function stopScroll(event){
-    event.preventDefault();
+function stopScroll(e){
+    e.preventDefault();
 }
 
 //初始化alert,dialog等容器位置
@@ -512,13 +512,14 @@ doraSlider.prototype = {
 
     function bindButtonEvent(type,_targetObj,_masterObj,confirm,cancel,shadeClose){
 
-        document.body.addEventListener('touchmove', stopScroll , false);
+        //document.body.addEventListener('touchmove', stopScroll , false);
         if(shadeClose){
             $('body').find('.doraui_mask').click(function(){
                 hideLayer(_targetObj,_masterObj);
             });
         }
         if(type == 'alert'){
+            document.body.addEventListener('touchmove', stopScroll , false);
             $(_targetObj).find('.confirm-btn').click(function(){
                 hideLayer(_targetObj,_masterObj);
                 if(confirm) confirm();
@@ -538,18 +539,63 @@ doraSlider.prototype = {
             });
 
             $(_targetObj).find('.icon-close').click(function(){
+                enableScroll();
                 hideLayer(_targetObj,_masterObj);
             });
 
-            $(_targetObj).find('.alert-body')[0].addEventListener('touchmove', function(e){
+            //针对弹窗内文本的滚动
+            var _alertBodyObj = $(_targetObj).find('.alert-body');
+            var disableScroll = function(){
+                $(document).on('mousewheel', preventDefault);
+                $(document).on('touchmove', preventDefault);
+            };
+            var enableScroll = function(){
+                $(document).off('mousewheel', preventDefault);
+                $(document).off('touchmove', preventDefault);
+            };
 
-                document.body.removeEventListener('touchmove', stopScroll , false);
+            // 内部可滚
+            $(_alertBodyObj).on('mousewheel', innerScroll);
+            // 外部禁用
+            disableScroll();
 
-            } , false);
+            // 移动端touch重写
+            var startX, startY;
+            $(_alertBodyObj)[0].addEventListener('touchstart', function(e){
+                startX = e.changedTouches[0].pageX;
+                startY = e.changedTouches[0].pageY;
+            },false);
 
-            $(_targetObj).find('.alert-body')[0].addEventListener('touchend', function(){
-                document.body.addEventListener('touchmove', stopScroll , false);
-            } , false);
+            // 仿innerScroll方法
+            $(_alertBodyObj)[0].addEventListener('touchmove', function(e){
+                e.stopPropagation();
+
+                var deltaX = e.changedTouches[0].pageX - startX;
+                var deltaY = e.changedTouches[0].pageY - startY;
+
+                // 只能纵向滚
+                if(Math.abs(deltaY) < Math.abs(deltaX)){
+                    e.preventDefault();
+                    return false;
+                }
+
+                var box = $(this).get(0);
+                if($(box).height() + box.scrollTop >= box.scrollHeight){
+                    if(deltaY < 0) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+                if(box.scrollTop === 0){
+                    if(deltaY > 0) {
+                        e.preventDefault();
+                        return false;
+                    }
+                }
+
+            },false);
+        }else if(type == 'tips'){
+            document.body.addEventListener('touchmove', stopScroll , false);
         }
 
     }
@@ -558,10 +604,47 @@ doraSlider.prototype = {
         _targetObj.removeClass('show-layer');
         _masterObj.remove();
         document.body.removeEventListener('touchmove', stopScroll , false);
-        setTimeout(function(){
+        setTimeout(()=>{
             _targetObj.remove();
         },400)
     }
+
+    function preventDefault(e) {
+        e = e || window.event;
+        e.preventDefault && e.preventDefault();
+        e.returnValue = false;
+    }
+
+    function stopPropagation(e){
+        e = e || window.event;
+        e.stopPropagation && e.stopPropagation();
+        e.cancelBubble = false;
+    }
+
+    function innerScroll(e){
+        // 阻止冒泡到document
+        // document上已经preventDefault
+        stopPropagation(e);
+
+        var delta = e.wheelDelta || e.detail || 0;
+        var box = $(this).get(0);
+
+        if($(box).height() + box.scrollTop >= box.scrollHeight){
+            if(delta < 0) {
+                preventDefault(e);
+                return false;
+            }
+        }
+        if(box.scrollTop === 0){
+            if(delta > 0) {
+                preventDefault(e);
+                return false;
+            }
+        }
+    }
+
+
+
 
 })(jQuery);
 

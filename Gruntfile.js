@@ -40,10 +40,10 @@ module.exports = function (grunt) {
     });
 
     grunt.loadNpmTasks("grunt-browserify");
-    grunt.loadNpmTasks("grunt-contrib-watch");
+    //grunt.loadNpmTasks("grunt-contrib-watch");
     grunt.loadNpmTasks('grunt-contrib-uglify');
 
-    grunt.registerTask("default", ["watch"]);
-    grunt.registerTask("build", ["browserify",'uglify:buildb']);
+    //grunt.registerTask("default", ["watch"]);
+    grunt.registerTask("default", ["browserify",'uglify:buildb']);
     //grunt.registerTask('mindora', ['uglify:buildb']);
 };
