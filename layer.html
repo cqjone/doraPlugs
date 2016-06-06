@@ -41,6 +41,14 @@
 
             });
 
+            $('#layerLoading').click(function(){
+
+                $.doraLayer.open({
+                    type : 'loading'
+                });
+
+            });
+
 
 
         })
@@ -57,6 +65,7 @@
 <button type="button" class="dora-btn btn-default" id="layerTips">打开Layer Tips 窗口</button>
 <br/>
 <br/>
+<button type="button" class="dora-btn btn-default" id="layerLoading">打开Layer Loading 窗口</button>
 <br/>
 <br/>
 <br/>

@@ -433,7 +433,17 @@ doraSlider.prototype = {
             }else if(type == 'tips'){
                 targetHtml = this.getTipsHtml(msg,style);
                 addMaster({type,targetHtml,yes,time,shadeClose});
+            }else if(type == 'loading'){
+                targetHtml = this.getLoadingHtml();
+                addMaster({type,targetHtml});
             }
+        },
+
+        close(){
+            var _targetObj = $("[ui-type='layer']");
+            var _masterObj = $('body').find('.doraui_mask');
+            $(_targetObj).remove();
+            $(_masterObj).remove();
         },
 
         getAlertHtml(title,msg,style,btn){
@@ -475,6 +485,16 @@ doraSlider.prototype = {
                 </div>
             `;
             return tipsHtml;
+        },
+
+        getLoadingHtml(){
+            var loadingHtml = `
+                <div class="alert-loading" ui-type="layer">
+                    <div class="loading-icon"></div>
+                    <p>请等待...</p>
+                </div>
+            `
+            return loadingHtml;
         }
 
     };
@@ -486,7 +506,7 @@ doraSlider.prototype = {
         var _targetObj = $(params.targetHtml);
         var _objId = "layer_" + Math.round(Math.random() * 10000);
         var _masterObj =  $("<div class='doraui_mask' style='z-index: 19870426'></div>");
-        if(params.type == 'alert' || params.type == 'confirm' || params.type == 'tips'){
+        if(params.type == 'alert' || params.type == 'confirm' || params.type == 'tips' || params.type == 'loading'){
             $(_masterObj).appendTo(_body);
         }
 
@@ -595,6 +615,8 @@ doraSlider.prototype = {
 
             },false);
         }else if(type == 'tips'){
+            document.body.addEventListener('touchmove', stopScroll , false);
+        }else if(type == 'loading'){
             document.body.addEventListener('touchmove', stopScroll , false);
         }
 

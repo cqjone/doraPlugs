@@ -446,7 +446,17 @@
             } else if (type == 'tips') {
                 targetHtml = this.getTipsHtml(msg, style);
                 addMaster({ type: type, targetHtml: targetHtml, yes: yes, time: time, shadeClose: shadeClose });
+            } else if (type == 'loading') {
+                targetHtml = this.getLoadingHtml();
+                addMaster({ type: type, targetHtml: targetHtml });
             }
+        },
+
+        close: function close() {
+            var _targetObj = $("[ui-type='layer']");
+            var _masterObj = $('body').find('.doraui_mask');
+            $(_targetObj).remove();
+            $(_masterObj).remove();
         },
 
         getAlertHtml: function getAlertHtml(title, msg, style, btn) {
@@ -462,6 +472,11 @@
         getTipsHtml: function getTipsHtml(msg, style) {
             var tipsHtml = '\n                <div class="alert-tip" ui-type="layer" style="z-index: 19870427">\n                    <p>' + msg + '</p>\n                </div>\n            ';
             return tipsHtml;
+        },
+
+        getLoadingHtml: function getLoadingHtml() {
+            var loadingHtml = '\n                <div class="alert-loading" ui-type="layer">\n                    <div class="loading-icon"></div>\n                    <p>请等待...</p>\n                </div>\n            ';
+            return loadingHtml;
         }
 
     };
@@ -472,7 +487,7 @@
         var _targetObj = $(params.targetHtml);
         var _objId = "layer_" + Math.round(Math.random() * 10000);
         var _masterObj = $("<div class='doraui_mask' style='z-index: 19870426'></div>");
-        if (params.type == 'alert' || params.type == 'confirm' || params.type == 'tips') {
+        if (params.type == 'alert' || params.type == 'confirm' || params.type == 'tips' || params.type == 'loading') {
             $(_masterObj).appendTo(_body);
         }
 
@@ -579,6 +594,8 @@
                 }
             }, false);
         } else if (type == 'tips') {
+            document.body.addEventListener('touchmove', stopScroll, false);
+        } else if (type == 'loading') {
             document.body.addEventListener('touchmove', stopScroll, false);
         }
     }
