@@ -18,18 +18,23 @@
 //            $(_targetObj).on('keydown',function(){
 //                console.log('----down---'+$(this).val())
 //            })
-            $(_targetObj).bind('focus', function() {
-                var _this = $(this);
-//                $(this)[0].type = 'tel';
-                setTimeout(function(){
-                    _this[0].type = 'text';
-                },1000)
-            });
+//            $(_targetObj).bind('focus', function() {
+//                var _this = $(this);
+////                $(this)[0].type = 'tel';
+//                setTimeout(function(){
+//                    _this[0].type = 'text';
+//                },1000)
+//            });
 
+            var targetNo = "";
             $(_targetObj).on('keyup',function(){
                 var _that = this;
-                console.log('---up----'+$(this).val());
+
                 var currentTxt = $(this).val();
+                var newTxt = currentTxt.substr(currentTxt.length-1);
+                console.log('---up----'+newTxt);
+                targetNo += newTxt;
+                console.log('---targetNo----'+targetNo);
                 var mask = '';
                 for(var i=0;i<currentTxt.length;i++){
                     mask += '*'
@@ -37,7 +42,7 @@
                 console.log('--mask---'+mask);
                 setTimeout(function(){
                     $(_that).val(mask);
-                },500);
+                },10);
             })
         })
     </script>
