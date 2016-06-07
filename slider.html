@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
     <title>doraSlider</title>
     <script src="js/jquery-1.10.2.min.js"></script>
-    <script src="js/dora.js"></script>
+    <script src="js/dora.min.js"></script>
     <link rel="stylesheet" href="css/dora.css">
 </head>
 <body>
@@ -30,14 +30,8 @@
 <script>
     $(function(){
 
-        new doraSlider('#demo',{
-            showFocus : true
-        });
-
-        new doraSlider('#demo1',{
-            showFocus : true,
-            height : '10em'
-        });
+        $('#demo').doraSlider();
+        $('#demo1').doraSlider({height:'10em'});
 
     })
 </script>

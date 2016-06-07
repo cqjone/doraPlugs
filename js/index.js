@@ -4,7 +4,7 @@
  */
 'use strict';
 
-!(function () {
+!(function ($) {
     'use strict';
     //禁止滚动事件
     function stopScroll(e) {
@@ -29,156 +29,6 @@
         }
     }
 
-    /*
-     * block控件
-     * 指定block对象的属性message
-     * message : 信息提示内容(string/obj)
-     * */
-
-    //创建弹窗
-    $.block = function (jsonData) {
-        var currentObj = new blockObj(jsonData);
-    };
-
-    //关闭弹窗
-    $.unblock = function () {
-        if ($("[ui-type='block']").length > 0) {
-            $('body').find('.doraui_mask').remove();
-            document.body.removeEventListener('touchmove', stopScroll, false);
-            $("[ui-type='block']").each(function (i) {
-                if ($(this).attr('msg-type') == 'obj') {
-                    $(this).children().eq(0).hide();
-                    $(this).children().eq(0).unwrap();
-                } else {
-                    $(this).remove();
-                }
-            });
-        }
-    };
-
-    var blockObj = function blockObj(jsonData) {
-
-        var objId = "block_" + Math.round(Math.random() * 100);
-        jsonData = jsonData || {};
-        jsonData.message = jsonData.message || '<p>请稍后...</p>';
-        jsonData.overClass = jsonData.overClass || 'block-a';
-
-        this.html = blockHtml(objId, jsonData);
-        this.init(objId, jsonData);
-    };
-
-    blockObj.prototype = {
-        //    block初始化
-        init: function init(objId, jsonData) {
-            var _this = this;
-
-            if (jsonData.message instanceof jQuery) {
-                $(jsonData.message).wrap(this.html);
-                _this.obj = $('#' + objId);
-                $(_this.obj).attr('msg-type', 'obj');
-                $(_this.obj).show();
-                $(jsonData.message).show();
-            } else {
-                $('body').prepend(this.html);
-                _this.obj = $('#' + objId);
-                $(_this.obj).attr('msg-type', 'str');
-                $(jsonData.message).appendTo(_this.obj);
-            }
-
-            //        设置容器的居中显示
-            $(_this.obj).css({
-                'width': $(_this.obj).width() + 'px',
-                'left': '50%',
-                'top': '50%',
-                'margin-left': -$(_this.obj).width() / 2 + 'px',
-                'margin-top': -$(_this.obj).height() / 2 + 'px'
-            });
-
-            $("<div class='doraui_mask' style='z-index: 19870426'></div>").insertBefore(_this.obj);
-            $(_this.obj).css('z-index', 19870427);
-            //        禁止背景拖动
-            document.body.addEventListener('touchmove', stopScroll, false);
-        }
-    };
-
-    function blockHtml(objId, jsonData) {
-        var html = "";
-        html += "<div class='block " + jsonData.overClass + "' ui-type='block' id='" + objId + "'></div>";
-        return html;
-    }
-
-    /*
-     * tips 操作提示控件
-     * 指定tips对象的属性message
-     * type : 信息提示类型 success 操作成功 warning 警告 danger 危险 info 提示
-     * message : 信息提示内容(string/obj)
-     * */
-
-    $.tipsShow = function (jsonData) {
-        var currentObj = new tipsObj(jsonData);
-    };
-
-    $.tipsHide = function (obj) {
-        $(obj).remove();
-        document.body.removeEventListener('touchmove', stopScroll, false);
-    };
-
-    var tipsObj = function tipsObj(jsonData) {
-        var objId = "tips_" + Math.round(Math.random() * 100);
-        jsonData = jsonData || {};
-        jsonData.type = jsonData.type || 'success';
-        jsonData.message = jsonData.message || '操作成功！';
-        jsonData.overClass = jsonData.overClass || 'tips-a';
-        jsonData.callBack = jsonData.callBack || '';
-        this.html = tipsHtml(objId, jsonData);
-        this.init(objId, jsonData.callBack);
-    };
-
-    tipsObj.prototype = {
-        //    tips初始化
-        init: function init(objId, callBack) {
-            var _this = this;
-
-            $('body').prepend(this.html);
-            _this.obj = $('#' + objId);
-            var closeBtn = $(_this.obj).find('.close');
-            var confirmBtn = $(_this.obj).find('.confirm');
-            //        设置容器的居中显示
-            setContainerPosition(_this.obj);
-            $(_this.obj).css('z-index', 11);
-            document.body.addEventListener('touchmove', stopScroll, false);
-            setTimeout(function () {
-                $(_this.obj).animate({
-                    'opacity': 0
-                }, 1000, function () {
-                    $(_this.obj).remove();
-                    document.body.removeEventListener('touchmove', stopScroll, false);
-                    if (callBack) {
-                        callBack();
-                    }
-                });
-            }, 3000);
-        }
-    };
-
-    function tipsHtml(objId, jsonData) {
-        var html = "";
-        var typeStr = 'check-right';
-        if (jsonData.type == "info") {
-            typeStr = 'notice-up';
-        } else if (jsonData.type == "warning") {
-            typeStr = 'notice-down';
-        } else if (jsonData.type == "danger") {
-            typeStr = 'notice-triangle';
-        }
-        html += "<div class='tips " + jsonData.overClass + "' ui-type='tips' id='" + objId + "'>";
-        html += "<div class='tips-content'>";
-        html += "<i class='icon-" + typeStr + "'></i>";
-        html += "&nbsp;<span class='tips-info'>" + jsonData.message + "</span></div>";
-        html += "</div>";
-        return html;
-    }
-
     /**
      * doraSlider
      * @charset utf-8
@@ -188,10 +38,10 @@
      * @version 1.0
      * @date 2016-04-27
      * @example
-     * new slider('#demo1',{});
+     * $('#demo1').doraSlider({});
      */
 
-    function doraSlider(id, settings) {
+    $.fn.doraSlider = function (settings) {
 
         var defaultSettings = {
             width: '100%', //容器宽度
@@ -200,25 +50,13 @@
             during: 5000, //间隔时间
             speed: 200 //滑动速度
         };
-        settings = $.extend(true, {}, defaultSettings, settings);
+        var settings = $.extend(true, {}, defaultSettings, settings);
 
-        this.obj = $(id) || {};
-        this.width = settings.width;
-        this.height = settings.height;
-        this.showFocus = settings.showFocus; // 轮播点是否显示
-        this.during = settings.during;
-        this.speed = settings.speed;
-        this.init();
-    }
-
-    doraSlider.prototype = {
-
-        init: function init() {
-
-            var _this = this.obj;
-            var _showFocus = this.showFocus;
-            var _during = this.during;
-            var _speed = this.speed;
+        return this.each(function () {
+            var _this = $(this);
+            var _showFocus = settings.showFocus;
+            var _during = settings.during;
+            var _speed = settings.speed;
             var _slideIndex = 1; // 轮播索引值
             var _imgWidth = $(_this).width();
             var _ulContainer = $(_this).find('ul');
@@ -233,7 +71,7 @@
             var _slideTask;
 
             //容器样式
-            $(_this).css({ height: this.height });
+            $(_this).css({ height: settings.height });
             //图片容器
             $(_ulContainer).css({
                 width: _imgBoxWidth,
@@ -402,17 +240,19 @@
                     }
                 });
             }
-        }
-
+        });
     };
 
     /*
      * layer控件
-     *
+     * @charset utf-8
+     * @extends jquery.1.10.1
+     * @fileOverview 弹窗组件
+     * @author 肖燊
+     * @version 1.0
+     * @date 2016-04-27
      *
      * */
-
-    //创建弹窗
 
     $.doraLayer = {
 
