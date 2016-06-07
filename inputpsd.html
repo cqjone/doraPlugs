@@ -20,7 +20,7 @@
 //            })
             $(_targetObj).bind('focus', function() {
                 var _this = $(this);
-                $(this)[0].type = 'tel';
+//                $(this)[0].type = 'tel';
                 setTimeout(function(){
                     _this[0].type = 'text';
                 },1000)
@@ -43,6 +43,6 @@
     </script>
 </head>
 <body>
-<input type="text" id="pwd" ui-type="reShow"/>
+<input type="tel" id="pwd" ui-type="reShow"/>
 </body>
 </html>
