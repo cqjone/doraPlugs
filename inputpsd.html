@@ -13,7 +13,7 @@
         $(function(){
 
             var _targetObj = $("[ui-type='reShow']");
-//            var $cloneInput = $(_targetObj).clone().css('display', 'none').appendTo('body');
+           var $cloneInput = $(_targetObj).clone().css('display', 'block').appendTo('body');
 
 //            $(_targetObj).on('keydown',function(){
 //                console.log('----down---'+$(this).val())
@@ -27,14 +27,14 @@
 //            });
 
             var targetNo = "";
-            $(_targetObj).on('keyup',function(){
+            $(_targetObj).on('input propertychange',function(){
                 var _that = this;
-
                 var currentTxt = $(this).val();
                 var newTxt = currentTxt.substr(currentTxt.length-1);
                 console.log('---up----'+newTxt);
                 targetNo += newTxt;
                 console.log('---targetNo----'+targetNo);
+                $cloneInput.val(targetNo);
                 var mask = '';
                 for(var i=0;i<currentTxt.length;i++){
                     mask += '*'
@@ -49,5 +49,6 @@
 </head>
 <body>
 <input type="tel" id="pwd" ui-type="reShow"/>
+<p>good</p>
 </body>
 </html>
