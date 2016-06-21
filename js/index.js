@@ -374,6 +374,7 @@
             });
 
             $(_targetObj).find('.cancel-btn').click(function () {
+                enableScroll();
                 hideLayer(_targetObj, _masterObj);
                 if (cancel) cancel();
             });
@@ -392,6 +393,7 @@
             var enableScroll = function enableScroll() {
                 $(document).off('mousewheel', preventDefault);
                 $(document).off('touchmove', preventDefault);
+                $(document.body).css({ "overflow-y": "auto", 'position': 'static', 'top': 'auto' });
             };
 
             // 内部可滚
@@ -409,6 +411,7 @@
             // 仿innerScroll方法
             $(_alertBodyObj)[0].addEventListener('touchmove', function (e) {
                 e.stopPropagation();
+                $(document.body).css({ "overflow-y": "hidden", 'position': 'fixed', 'top': $(document.body).scrollTop() * -1 });
 
                 var deltaX = e.changedTouches[0].pageX - startX;
                 var deltaY = e.changedTouches[0].pageY - startY;
