@@ -29,10 +29,16 @@ module.exports = function (grunt) {
         uglify: {
             buildb:{//任务二：压缩b.js，输出压缩信息
                 options: {
-                    report: "min"//输出压缩率，可选的值有 false(不输出信息)，gzip
+                    report: "min",//输出压缩率，可选的值有 false(不输出信息)，gzip
+                    // 生成的map文件地址与源文件(src/1.js)的 相对路径
+                    sourceMapRoot: './',
+                    // 生成 map文件的地址
+                    sourceMap: './dist/js/dora.min.js.map',
+                    // 用于定义 map文件地址 并放在压缩文件底部， url相对于 压缩文件(dist/mix.js)
+                    sourceMappingURL: 'dora.min.js.map'
                 },
                 files: {
-                    './js/dora.min.js': ['./js/index.js']
+                    './dist/js/dora.min.js': ['./js/index.js']
                 }
             }
         }
